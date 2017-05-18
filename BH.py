@@ -2,16 +2,21 @@ import random
 import math
 import sys
 
-range_x, range_y = 10.0, 10.0
-left_x, left_y = -5.0, -5.0
+range_d = 200.0
+left = -100.0
 
+dim = 10
+
+#rosenbrock's function
 def fun(star):
-    return pow(star.x,2) + pow(star.y,2) + 1000
+    res = 0.0
+    for i in range(1, dim-1):
+        res += (100 * (star.pos[i] ** 2 - star.pos[i+1]) ** 2 + (star.pos[i] - 1) ** 2)
+    return res
 
 class Star:
     def __init__(self):
-        self.x = random.random() * range_x + left_x
-        self.y = random.random() * range_y + left_y
+        self.pos = [random.random() * range_d + left for i in range(dim)]
         self.isBH = False
         self.fitness = 0.0
 
@@ -19,10 +24,12 @@ class Star:
         self.fitness = fun(self)
 
     def updateLocation(self, BH):
-        self.x += random.random() * (BH.x - self.x)
-        self.y += random.random() * (BH.y - self.y)
+        for i in range(len(self.pos)):
+            self.pos[i] += random.random() * (BH.pos[i] - self.pos[i])
 
     def __str__(self):
+        for i in range(dim):
+            print self.pos
         return "Is Bh: " + str(self.isBH) + " fitness: " + str(self.fitness)
 
 
@@ -46,19 +53,21 @@ def calcEvetHorizon(BH, stars):
     return BH.fitness / tmp
 
 def isCrossingEventHorizon(BH, star, horizon):
-    x = pow(abs(BH.x - star.x), 2)
-    y = pow(abs(BH.y - star.y), 2)
-    if math.sqrt(x + y) <= horizon:
+    r = 0.0
+    #euclidian norm
+    for i in range(len(star.pos)):
+        r += pow(star.pos[i] - BH.pos[i], 2)
+    if math.sqrt(r) <= horizon:
         return True
     return False
 
 #initializing population
-pop_number = 100
+pop_number = 1000
 pop = []
 for i in range(pop_number):
     pop.append(Star())
 
-max_iter = 1000
+max_iter = 1e8
 it = 0
 BH = Star()
 
@@ -81,8 +90,8 @@ while it < max_iter:
     # replace it with a new star in a random location in the search space
     for i in range(pop_number):
         if isCrossingEventHorizon(BH, pop[i], eventHorizon) == True and pop[i].isBH == False:
-            pop[i].x = random.random() * range_x + left_x
-            pop[i].y = random.random() * range_y + left_y
+            for j in range(dim):
+                pop[i].pos[j] = random.random() * range_d + left
 
 
     # do wypisywania
@@ -90,6 +99,8 @@ while it < max_iter:
     #     print str(pop[i]) + " " + str(pop[i].x) + " " + str(pop[i].y)
     # print eventHorizon
     # print
+    if it % 1000 == 0:
+        print BH
 
     it += 1
 
