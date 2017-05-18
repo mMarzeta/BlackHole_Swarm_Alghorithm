@@ -8,11 +8,34 @@ left = -100.0
 dim = 10
 
 #rosenbrock's function
-def fun(star):
+def fun(star, flag):
     res = 0.0
-    for i in range(1, dim-1):
-        res += (100 * (star.pos[i] ** 2 - star.pos[i+1]) ** 2 + (star.pos[i] - 1) ** 2)
-    return res
+    if flag == "rosenbrock":
+        for i in range(1, dim - 1):
+            res += (100 * (star.pos[i] ** 2 - star.pos[i + 1]) ** 2 + (star.pos[i] - 1) ** 2)
+        return res
+    elif flag == "bent_cigar":
+        for i in range(2, dim):
+            res += star.pos[i] ** 2
+        res *= 10 ** 6
+        res += star.pos[i] ** 2
+        return res
+    elif flag == "zakharov":
+        part_1 = 0.
+        part_2 = 0.
+        part_3 = 0.
+        for i in range(1, dim):
+            part_1 += star.pos[i] ** 2
+            part_2 += star.pos[i] * .5
+            part_3 += star.pos[i] * .5
+        part_2 = part_2 ** 2
+        part_3 = part_3 ** 4
+        res = part_1 + part_2 + part_3
+        return res
+    elif flag == "rastrigin":
+        for i in range(1, dim):
+            res += (star.pos[i] ** 2 - 10 * math.cos(2 * math.pi * star.pos[i]) + 10)
+        return res
 
 class Star:
     def __init__(self):
@@ -20,8 +43,12 @@ class Star:
         self.isBH = False
         self.fitness = 0.0
 
+    #wybor funkcji do analizy
     def updateFitness(self):
-        self.fitness = fun(self)
+        self.fitness = fun(self, "zakharov")
+        #self.fitness = fun(self, "rosenbrock")
+        #self.fitness = fun(self, "bent_cigar")
+        #self.fitness = fun(self, "rastrigin")
 
     def updateLocation(self, BH):
         for i in range(len(self.pos)):
@@ -100,9 +127,12 @@ while it < max_iter:
     # print eventHorizon
     # print
     if it % 1000 == 0:
-        print BH
+        print (BH)
 
     it += 1
 
-print BH
+    if BH.fitness < 1e-100:
+        break
+
+print (BH)
 
