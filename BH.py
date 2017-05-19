@@ -1,6 +1,7 @@
 import random
 import math
 import sys
+import time
 
 range_d = 200.0
 left = -100.0
@@ -47,7 +48,7 @@ class Star:
     def updateFitness(self):
         #self.fitness = fun(self, "zakharov")
         #self.fitness = fun(self, "rosenbrock")
-        self.fitness = fun(self, "bent_cigar")
+        #self.fitness = fun(self, "bent_cigar")
         #self.fitness = fun(self, "rastrigin")
 
     def updateLocation(self, BH):
@@ -97,6 +98,8 @@ max_iter = 1e8
 it = 0
 BH = Star()
 
+start_time = time.time()
+
 while it < max_iter:
     #For each star, evaluate the objective function
     for i in range(0, pop_number):
@@ -133,5 +136,8 @@ while it < max_iter:
     if BH.fitness < 1e-8:
         break
 
-print (BH)
+end_time = time.time()
+
+exec_of_loop = end_time - start_time
+
 
