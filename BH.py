@@ -11,20 +11,20 @@ dim = 10
 def fun(star, flag):
     res = 0.0
     if flag == "rosenbrock":
-        for i in range(1, dim - 1):
+        for i in range(0, dim - 1):
             res += (100 * (star.pos[i] ** 2 - star.pos[i + 1]) ** 2 + (star.pos[i] - 1) ** 2)
         return res
     elif flag == "bent_cigar":
-        for i in range(2, dim):
+        for i in range(1, dim):
             res += star.pos[i] ** 2
         res *= 10 ** 6
-        res += star.pos[i] ** 2
+        res += star.pos[0] ** 2
         return res
     elif flag == "zakharov":
         part_1 = 0.
         part_2 = 0.
         part_3 = 0.
-        for i in range(1, dim):
+        for i in range(0, dim):
             part_1 += star.pos[i] ** 2
             part_2 += star.pos[i] * .5
             part_3 += star.pos[i] * .5
@@ -33,8 +33,8 @@ def fun(star, flag):
         res = part_1 + part_2 + part_3
         return res
     elif flag == "rastrigin":
-        for i in range(1, dim):
-            res += (star.pos[i] ** 2 - 10 * math.cos(2 * math.pi * star.pos[i]) + 10)
+        for i in range(0, dim):
+            res += (star.pos[i] ** 2 - 10. * math.cos(2 * math.pi * star.pos[i]) + 10.)
         return res
 
 class Star:
@@ -45,9 +45,9 @@ class Star:
 
     #wybor funkcji do analizy
     def updateFitness(self):
-        self.fitness = fun(self, "zakharov")
+        #self.fitness = fun(self, "zakharov")
         #self.fitness = fun(self, "rosenbrock")
-        #self.fitness = fun(self, "bent_cigar")
+        self.fitness = fun(self, "bent_cigar")
         #self.fitness = fun(self, "rastrigin")
 
     def updateLocation(self, BH):
@@ -55,8 +55,7 @@ class Star:
             self.pos[i] += random.random() * (BH.pos[i] - self.pos[i])
 
     def __str__(self):
-        for i in range(dim):
-            print self.pos
+        print self.pos
         return "Is Bh: " + str(self.isBH) + " fitness: " + str(self.fitness)
 
 
@@ -89,9 +88,9 @@ def isCrossingEventHorizon(BH, star, horizon):
     return False
 
 #initializing population
-pop_number = 1000
+pop_number = 100
 pop = []
-for i in range(pop_number):
+for i in range(0, pop_number):
     pop.append(Star())
 
 max_iter = 1e8
@@ -100,7 +99,7 @@ BH = Star()
 
 while it < max_iter:
     #For each star, evaluate the objective function
-    for i in range(pop_number):
+    for i in range(0, pop_number):
         pop[i].updateFitness()
         pop[i].isBH = False
     #Select the best star that has the best fitness value as the black hole
@@ -131,7 +130,7 @@ while it < max_iter:
 
     it += 1
 
-    if BH.fitness < 1e-100:
+    if BH.fitness < 1e-8:
         break
 
 print (BH)
