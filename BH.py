@@ -5,9 +5,10 @@ import sys
 range_d = 200.0
 left = -100.0
 
+#dimension
 dim = 10
 
-#rosenbrock's function
+#testing function
 def fun(star, flag):
     res = 0.0
     if flag == "rosenbrock":
@@ -45,8 +46,8 @@ class Star:
 
     #wybor funkcji do analizy
     def updateFitness(self):
-        #self.fitness = fun(self, "zakharov")
-        self.fitness = fun(self, "rosenbrock")
+        self.fitness = fun(self, "zakharov")
+        #self.fitness = fun(self, "rosenbrock")
         #self.fitness = fun(self, "bent_cigar")
         #self.fitness = fun(self, "rastrigin")
 
@@ -87,19 +88,20 @@ def isCrossingEventHorizon(BH, star, horizon):
         return True
     return False
 
-#initializing population
 
+#file to write in
+f = open("zakharov_500.txt", "w")
 
-f = open("rosenbrock_100.txt", "w")
-
+# rerunning alghorithm 30 times
 for numer in range(30):
-    pop_number = 100
+
+    # initializing population
+    pop_number = 500
     pop = []
     for i in range(0, pop_number):
         pop.append(Star())
 
-    max_iter = 1e8
-    it = 0
+    max_iter, it= 1e8, 0
     BH = Star()
     while it < max_iter:
         #For each star, evaluate the objective function
@@ -123,21 +125,18 @@ for numer in range(30):
                 for j in range(dim):
                     pop[i].pos[j] = random.random() * range_d + left
 
-
-        # do wypisywania
-        # for i in range(pop_number):
-        #     print str(pop[i]) + " " + str(pop[i].x) + " " + str(pop[i].y)
-        # print eventHorizon
-        # print
-        if it % 10000 == 9999:
+        #to see progress while running
+        if it % 10000 == 0:
             print (BH)
 
         it += 1
 
+        #breaking condition
         if BH.fitness < 1e-4:
             break
 
-    f.write(str(numer) + " " + str(BH.fitness) + str(it) + "\n")
+    #writing each run to file
+    f.write(str(numer) + " " + str(BH.fitness) + " " + str(it) + "\n")
     print (BH)
 
 f.close()
